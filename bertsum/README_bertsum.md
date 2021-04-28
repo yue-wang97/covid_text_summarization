@@ -4,15 +4,15 @@
 
 **Package Requirements**: Under our python viturual environment: `data_preprocess/bertsumenv`
 
-The codes of model implement are borrowed from https://github.com/nlpyang/BertSum and based on our dataset, we did some modification and saved the modified version in the `model` folder.
+The codes of model implement are borrowed from https://github.com/nlpyang/BertSum and based on our dataset, but we did some modification in **infer.py** file and saved the modified version in the `model/data_builder.py` file.
 
 ## Data Preparation For Covid-19 Open Research Dataset
 
 ### Option 1: download the processed data
 
-We saved our data preprocessed by data.ipynb [here](https://drive.google.com/file/d/1wbPoNki2iMizBr4w37KrRZCaj0dIyZUS/view), it can be used in the **BertSum** model directly.
+We saved our data preprocessed by data.ipynb [here](https://drive.google.com/file/d/1wbPoNki2iMizBr4w37KrRZCaj0dIyZUS/view), unzip the zipfile and download files in **bertsum_data** folder and save the files in one folder. I will call this folder `bertsum_data` in the following steps.
 
-unzip the zipfile and save all files in **bertsum_data** folder
+it can be used for feeding to the Data Preparation For `CNN/Dailymail step/Option 2/step 2 of BertSum`
 
 
 
@@ -32,13 +32,25 @@ You can download the data that was processed in Bart model [here](https://drive.
 
 The corresponding json are read from file and written to text files `.story`
 
-The output is now suitable for feeding to the Data Preparation For CNN/Dailymail step/Option 2/step 2 of BertSum
+Save the files in one folder. I will call this folder `bertsum_data` in the following steps.
+
+The output is now suitable for feeding to the Data Preparation For `CNN/Dailymail step/Option 2/step 2 of BertSum`
 
 ## Model training and evaluation
 
-We follow the same steps in https://github.com/nlpyang/BertSum
+First you should download the code from [BertSum](https://github.com/nlpyang/BertSum) and replace the original `data_builder.py` file with our `model/data_builder.py` file
 
-In order to fit our dataset, we modify some code based on [BertSum](https://github.com/nlpyang/BertSum) saved the modified version in the `model` folder.
+We follow the same steps in [steps](https://github.com/nlpyang/BertSum) and did the following modification:
 
+- In **Step 3. Sentence Splitting and Tokenization**:
 
+  - Run `python preprocess.py -mode tokenize -raw_path RAW_PATH -save_path TOKENIZED_PATH` 3 times specifically on `bertsum_data/train/`, `bertsum_data/test/`, `bertsum_data/val/`and save the generated files in `../merged_stories_tokenized/train_data/`, `../merged_stories_tokenized/test_data/`, `../merged_stories_tokenized/val_data/`specifically.
 
+  - `RAW_PATH` is the directory containing story files ( `bertsum_data/train/`, `bertsum_data/test/`, `bertsum_data/val/`) `JSON_PATH` is the target directory to save the generated json files ( `../merged_stories_tokenized/train_data/`, `../merged_stories_tokenized/test_data/`, `../merged_stories_tokenized/val_data/`)
+
+- In **Step 4. Format to Simpler Json Files**:
+
+  - Run `python preprocess.py -mode format_to_lines -raw_path RAW_PATH -save_path JSON_PATH -map_path MAP_PATH -lower` three times specifically on ``../merged_stories_tokenized/train_data/`, `../merged_stories_tokenized/test_data/`, `../merged_stories_tokenized/val_data/`
+  - Make sure the `RAW_PATH` is the directory containing tokenized files (``../merged_stories_tokenized/train_data/`, `../merged_stories_tokenized/test_data/`, `../merged_stories_tokenized/val_data/`)
+
+- For the rest, just follow the same steps.
